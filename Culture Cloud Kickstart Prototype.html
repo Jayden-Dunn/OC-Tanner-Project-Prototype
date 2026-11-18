@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Culture Cloud Kickstart Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: Culture Cloud web chrome (white brand header, black nav bar, centered content column), plum accent. Single light theme to match the product. */
+  --bg:#ffffff;
+  --page:#f7f7f8;
+  --ink:#1d1d1f;
+  --muted:#6b6b72;
+  --line:#dedee3;
+  --plum:#8c2b5b;
+  --plum-dark:#6f2048;
+  --plum-soft:#f6e9f0;
+  --bar:#111111;
+  --good:#2e7d4f;
+  --good-soft:#d9efe0;
+  --warn:#a8620c;
+  --warn-soft:#fbeed8;
+  --bad:#b23a3a;
+  --gold:#c4952a;
+  --body:"Open Sans", "Segoe UI", system-ui, sans-serif;
+  --brand:"Noto Serif", Georgia, serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--plum)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+
+/* Prototype banner */
+.proto{background:#2b2b2e;color:#d6d6db;font-size:12px}
+.proto .in{max-width:1100px;margin:0 auto;padding:6px 20px;display:flex;gap:10px 18px;align-items:center;flex-wrap:wrap}
+.proto b{color:#fff}
+.proto .sp{margin-left:auto;display:flex;gap:8px;align-items:center}
+.proto button{background:#3d3d42;color:#fff;border:0;border-radius:4px;padding:3px 9px;font-size:12px;font-weight:600}
+.proto button[aria-pressed="true"]{background:var(--gold);color:#1d1404}
+
+/* Brand header */
+.brandbar{background:#fff}
+.brandbar .in{max-width:1100px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.cust{font-size:28px;letter-spacing:-.02em;line-height:1;color:var(--plum);text-decoration:none}
+.cust b{font-weight:800}
+.cust span{color:#333;font-weight:400}
+.brandbar .right{margin-left:auto;display:flex;align-items:center;gap:16px;font-size:13px;font-weight:600;flex-wrap:wrap}
+.brandbar .right a{color:var(--ink);text-decoration:none}
+.brandbar .right a:hover{text-decoration:underline}
+.brandbar .pts{font-weight:400}
+.brandbar .pts b{font-weight:600;font-variant-numeric:tabular-nums}
+.me{display:flex;align-items:center;gap:8px}
+.av{width:32px;height:32px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;font-weight:700;font-size:12px;flex:none}
+
+/* Nav bar */
+.navbar{background:var(--bar)}
+.navbar .in{max-width:1100px;margin:0 auto;padding:0 20px;display:flex;align-items:stretch;gap:6px;flex-wrap:wrap}
+.cc{display:flex;align-items:center;gap:7px;color:#fff;font-family:var(--brand);font-size:13px;margin-right:22px;padding:12px 0}
+.navbar nav{display:flex;gap:2px;flex-wrap:wrap}
+.navbar nav a{color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:13px 12px 10px;border-bottom:3px solid transparent;display:flex;align-items:center;gap:5px}
+.navbar nav a:hover{background:#222}
+.navbar nav a[aria-current="page"]{border-bottom-color:#fff}
+.navbar nav a .newtag{background:var(--plum);font-size:9px;font-weight:800;letter-spacing:.05em;padding:1px 5px;border-radius:3px}
+.navbar .icons{margin-left:auto;display:flex;align-items:center;gap:16px;color:#fff}
+.bell{position:relative}
+.bell::after{content:"";position:absolute;top:-1px;right:-1px;width:7px;height:7px;border-radius:50%;background:#e2574c}
+
+/* Page */
+.page{max-width:1100px;margin:0 auto;padding:22px 20px 40px}
+.view{display:none}
+.view.on{display:block}
+.ptitle{display:flex;align-items:flex-end;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.ptitle h1{font-size:22px;font-weight:700}
+.ptitle p{margin:2px 0 0;color:var(--muted);font-size:13px;max-width:70ch}
+.ptitle .act{margin-left:auto}
+.btn{background:var(--plum);color:#fff;border:1px solid var(--plum);border-radius:4px;padding:8px 16px;font-weight:700;font-size:13px}
+.btn:hover{background:var(--plum-dark)}
+.btn.ghost{background:#fff;color:var(--plum)}
+.btn.ghost:hover{background:var(--plum-soft)}
+.btn.sm{padding:5px 11px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:default}
+.linkbtn{background:none;border:0;color:#2a62b8;font-weight:700;font-size:13px;padding:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.06);padding:16px 18px}
+.card h3{font-size:16px;font-weight:700}
+.card .sub{color:var(--muted);font-size:12px;margin:2px 0 0}
+.stack{display:flex;flex-direction:column;gap:14px}
+.pill{display:inline-block;font-size:12px;font-weight:600;border-radius:3px;padding:2px 9px;white-space:nowrap}
+.pill.active{background:var(--good-soft);color:#24603d}
+.pill.new{background:var(--warn-soft);color:#7a4a08}
+.pill.quiet{background:#eeeef1;color:var(--muted)}
+.pill.lapsed{background:#f8e1dc;color:var(--bad)}
+.pill.ai{background:var(--plum-soft);color:var(--plum);font-weight:700;font-size:11px;letter-spacing:.03em}
+
+/* Notes */
+.note{display:none;background:#fff8e6;border:1px solid #ecd9a6;border-left:4px solid var(--gold);border-radius:4px;padding:10px 12px;font-size:12.5px;color:#4d3d12}
+body.notes .note{display:block}
+
+/* Home */
+.home-grid{display:grid;grid-template-columns:1fr 310px;gap:20px;align-items:start}
+.hero{background:linear-gradient(100deg,#2a1020,#5c1f3f 60%,#8c2b5b);color:#fff;border-radius:4px;padding:18px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hero h2{font-size:20px}
+.hero p{margin:2px 0 0;opacity:.85;font-size:13px}
+.hero .btn{margin-left:auto;background:#fff;color:var(--ink);border-color:#fff}
+.kick-top{display:flex;gap:12px;align-items:flex-start}
+.kick-top .day{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+.bar{height:10px;background:#ececf0;border-radius:99px;overflow:hidden;margin:12px 0 6px}
+.bar i{display:block;height:100%;background:var(--plum);border-radius:99px;transition:width .6s ease}
+.pct{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.pct b{color:var(--ink);font-variant-numeric:tabular-nums}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;list-style:none;padding:0}
+.steps li{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.steps .dot{width:22px;height:22px;border-radius:50%;border:2px solid #c9c9d0;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff}
+.steps li.done{color:var(--ink)}
+.steps li.done .dot{background:var(--good);border-color:var(--good)}
+.steps li.next{color:var(--ink);font-weight:700}
+.steps li.next .dot{border-color:var(--plum)}
+.row{display:flex;gap:12px;align-items:flex-start}
+.row .grow{flex:1;min-width:0}
+.spot{display:flex;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.spot:first-child{border-top:0;padding-top:4px}
+.spot .grow{flex:1;font-size:13px}
+.src{font-size:11.5px;color:var(--muted)}
+.feed-item{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.feed-item:first-child{border-top:0;padding-top:2px}
+.feed-item .msg{font-size:13px;margin:3px 0 6px}
+.feed-item .who{font-size:13px}
+.feed-item .val{font-size:11px;font-weight:700;color:var(--plum);text-transform:uppercase;letter-spacing:.04em}
+.reacts{display:flex;gap:6px}
+.reacts button{background:#f3f3f5;border:1px solid var(--line);border-radius:99px;font-size:12px;padding:2px 9px}
+.reacts button[aria-pressed="true"]{background:var(--plum-soft);border-color:#e3c3d4}
+.fresh{animation:fresh 2s ease}
+@keyframes fresh{from{background:#fff3d6}to{background:transparent}}
+.ptsbig{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.notif{width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:28px 1fr;gap:10px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.notif:hover{border-color:var(--plum)}
+.notif .ic{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:8.5px;font-weight:800}
+.notif .t{display:block;font-weight:700;font-size:12.5px;line-height:1.35}
+.notif .m{display:block;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+.notif .b{display:block;font-size:12px;color:var(--muted)}
+.askmini{background:var(--plum-soft);border:1px solid #e9cddc;border-radius:4px;padding:14px 16px}
+.askmini h3{font-size:15px}
+.askmini p{margin:4px 0 10px;font-size:12.5px;color:#5a3a4b}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(17,17,17,.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:40}
+.modal-bg.on{display:flex}
+.modal{background:#fff;border-radius:6px;max-width:520px;width:100%;max-height:calc(100% - 20px);overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative}
+.modal .mh{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.modal .mh h2{font-size:17px}
+.modal .mh .x{margin-left:auto;background:none;border:0;font-size:20px;line-height:1;color:var(--muted)}
+.modal .mb{padding:16px 18px}
+.fl{display:block;font-size:12px;font-weight:700;margin:12px 0 5px}
+.fl:first-child{margin-top:0}
+.inp,.sel,.area{width:100%;border:1px solid #c9c9d0;border-radius:4px;padding:9px 11px;font-family:inherit;font-size:14px;background:#fff;color:var(--ink)}
+.area{min-height:110px;resize:vertical;line-height:1.45}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{background:var(--plum-soft);color:var(--plum);border:1px solid #e6c6d7;border-radius:99px;padding:5px 11px;font-size:12px;font-weight:600}
+.chip:hover{background:#efd9e5}
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.levels button{background:#fff;border:1px solid #c9c9d0;border-radius:3px;padding:8px;font-size:13px;color:var(--ink)}
+.levels button[aria-pressed="true"]{border-color:var(--plum);background:var(--plum-soft);color:var(--plum);font-weight:700}
+.thinking{font-size:12px;color:var(--muted);min-height:18px;margin-top:8px}
+.mf{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--line)}
+.hidden{display:none !important}
+.center{text-align:center}
+.check{width:60px;height:60px;border-radius:50%;background:var(--good);display:grid;place-items:center;margin:6px auto 10px}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:60}
+.confetti i{position:absolute;top:-12px;width:8px;height:12px;border-radius:2px;animation:fall 1.7s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.3}}
+@media (prefers-reduced-motion: reduce){.confetti{display:none}.bar i{transition:none}.fresh{animation:none}}
+
+/* Ask */
+.ask-grid{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+.chat{background:#fff;border:1px solid var(--line);border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;flex-direction:column;height:640px}
+.chat-h{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.chat-h h2{font-size:15px}
+.chat-h .sub{font-size:12px;color:var(--muted)}
+.thread{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.bub{max-width:86%;font-size:13.5px}
+.bub.user{align-self:flex-end;background:var(--plum);color:#fff;border-radius:14px 14px 3px 14px;padding:9px 13px}
+.bub.bot{align-self:flex-start;display:flex;gap:10px}
+.bub.bot .body{background:#f4f4f6;border:1px solid #e8e8ec;border-radius:14px 14px 14px 3px;padding:11px 14px}
+.bub.bot .body p{margin:0 0 8px}
+.bub.bot .body p:last-child{margin-bottom:0}
+.bub.bot .body ul{margin:4px 0 8px;padding-left:18px}
+.bub.bot .body li{margin:2px 0}
+.bot-av{width:28px;height:28px;border-radius:50%;background:var(--bar);display:grid;place-items:center;flex:none}
+.rcard{background:#fff;border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:8px 0}
+.rcard .top{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700}
+.rcard .top span{font-variant-numeric:tabular-nums;color:var(--plum)}
+.rcard .bar{margin:8px 0 4px;height:8px}
+.rcard .s{font-size:12px;color:var(--muted)}
+.cat{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:6px 0;border-top:1px solid #e8e8ec;font-size:13px}
+.cat:first-child{border-top:0}
+.cat .c{font-variant-numeric:tabular-nums;font-weight:700}
+.cat small{grid-column:1/-1;color:var(--muted);font-size:11.5px}
+.typing{display:flex;gap:4px;padding:4px 2px}
+.typing i{width:7px;height:7px;border-radius:50%;background:#a5a5ad;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.prompts{padding:10px 16px 4px;border-top:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap}
+.prompts .lab{font-size:11px;color:var(--muted);font-weight:700;width:100%;text-transform:uppercase;letter-spacing:.05em}
+.composer{display:flex;gap:8px;padding:10px 16px 14px}
+.composer input{flex:1}
+.ctx dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:13px}
+.ctx dt{color:var(--muted)}
+.ctx dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+
+/* Manager */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.tile{background:#fff;border:1px solid var(--line);border-radius:4px;padding:12px 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.tile .n{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.tile .l{font-size:12px;color:var(--muted);font-weight:600}
+.insight{display:flex;gap:12px;align-items:center;background:var(--plum-soft);border:1px solid #e6c6d7;border-radius:4px;padding:12px 14px;margin-bottom:16px;flex-wrap:wrap}
+.insight p{margin:0;flex:1;min-width:240px;font-size:13.5px}
+.tbl-wrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:820px}
+th{text-align:left;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px;border-bottom:1px solid var(--line);background:#fafafb}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums}
+.who{display:flex;gap:10px;align-items:center}
+.who small{display:block;color:var(--muted);font-size:12px}
+.over{color:var(--bad);font-weight:700}
+.mini{width:80px;height:7px;background:#ececf0;border-radius:99px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px}
+.mini i{display:block;height:100%;background:var(--plum)}
+
+/* Initiatives (mirrors Culture Cloud list) */
+.init-wrap{max-width:660px;margin:0 auto}
+.subtabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:14px;align-items:flex-end}
+.subtabs span{padding:8px 2px;font-size:13px}
+.subtabs .on{border-bottom:3px solid var(--plum);font-weight:600}
+.subtabs .count{background:#e7e7ea;border-radius:3px;font-size:11px;padding:0 5px;margin-left:4px}
+.subtabs a{margin-left:auto;font-weight:700;font-size:13px;text-decoration:none;color:#2a62b8;padding:8px 0}
+.filters{display:flex;gap:8px;margin-bottom:12px;align-items:stretch;flex-wrap:wrap}
+.fbox{border:1px solid #bdbdc4;border-radius:3px;padding:4px 10px;font-size:13px;background:#fff;min-width:110px}
+.fbox small{display:block;font-size:10.5px;color:var(--muted)}
+.fsearch{flex:1;min-width:180px;border:1px solid #bdbdc4;border-radius:3px;display:flex;align-items:center;gap:8px;padding:0 10px;color:var(--muted);font-size:12px;background:#fff}
+.filters .btn{margin-left:auto;align-self:center}
+.icard{background:#fff;border:1px solid var(--line);border-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:12px 12px 14px;margin-bottom:12px}
+.icard .head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.icard h3{font-size:16px;font-weight:700}
+.icard .dates{font-size:12px;color:var(--muted)}
+.icard .dates b{color:#444}
+.icard .bodyr{display:grid;grid-template-columns:250px 1fr;gap:12px;margin-top:10px}
+.icard .art{height:95px;border-radius:2px;overflow:hidden}
+.icard .owner{display:flex;gap:8px;align-items:center;font-size:12px}
+.icard .owner small{display:block;color:var(--muted);font-size:10.5px}
+.icard .desc{font-size:12px;color:#555;margin:8px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.icard .stats{display:flex;gap:16px;font-size:12px;color:#444}
+.icard.feature{border-color:var(--plum);box-shadow:0 0 0 2px var(--plum-soft),0 1px 4px rgba(0,0,0,.08)}
+
+/* Impact */
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.fact .n{font-size:30px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--plum)}
+.fact .l{font-size:13px}
+.fact .s{font-size:11px;color:var(--muted);margin-top:6px;font-style:italic}
+.imp-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}
+.illus{font-size:11px;font-weight:700;color:var(--warn);background:var(--warn-soft);border-radius:3px;padding:2px 7px;display:inline-block;margin:8px 0 10px}
+.funnel{display:flex;flex-direction:column;gap:7px}
+.frow{display:grid;grid-template-columns:160px 1fr 44px;gap:10px;align-items:center;font-size:12.5px}
+.ftrack{height:20px;background:#f0eff3;border-radius:3px;overflow:hidden}
+.ftrack i{display:block;height:100%;background:var(--plum)}
+.frow .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.mlist{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
+.mlist li{display:grid;grid-template-columns:1fr auto;gap:2px 12px;border-bottom:1px solid var(--line);padding-bottom:9px;font-size:13px}
+.mlist li:last-child{border-bottom:0;padding-bottom:0}
+.mlist small{grid-column:1/-1;color:var(--muted);font-size:12px}
+.mlist .tgt{font-weight:800;color:var(--plum);font-variant-numeric:tabular-nums}
+.calc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;margin-top:8px}
+.calc input{width:70px}
+.calc .out{font-size:26px;font-weight:800;color:var(--plum);font-variant-numeric:tabular-nums}
+.phase{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.phase div{border:1px solid var(--line);border-radius:4px;padding:10px 12px;font-size:12.5px}
+.phase div b{display:block;font-size:13px}
+.phase div.now{border-color:var(--plum);background:var(--plum-soft)}
+
+.stub{text-align:center;padding:60px 20px;color:var(--muted)}
+footer{max-width:1100px;margin:0 auto;padding:0 20px 30px;color:var(--muted);font-size:11.5px}
+
+@media (max-width:960px){
+  .home-grid,.ask-grid,.imp-grid{grid-template-columns:1fr}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:1fr;gap:6px}
+  .steps li{flex-direction:row;align-items:center}
+}
+@media (max-width:600px){
+  .facts{grid-template-columns:1fr}
+  .icard .bodyr{grid-template-columns:1fr}
+  .chat{height:600px}
+}
+</style>
+</head>
+<body>
+
+<div class="proto"><div class="in">
+  <span><b>Concept prototype</b> · IS 4496 student project for O.C. Tanner · Ridgeline Coffee and all people are fictional · sample data</span>
+  <span class="sp"><span id="viewingAs">Viewing as Maya Torres (new hire)</span><button id="notesBtn" aria-pressed="false">Presenter notes</button></span>
+</div></div>
+
+<div class="brandbar"><div class="in">
+  <a class="cust" href="#home" aria-label="Ridgeline Coffee home"><b>RIDGELINE</b><span>coffee</span></a>
+  <div class="right">
+    <a href="#impact">Admin Home</a>
+    <span>Store <span style="color:#bbb">|</span> <span class="pts"><b id="hdrPts">1,000</b> points</span></span>
+    <span class="me"><span id="hdrName">Maya Torres (She/Her)</span><span class="av" id="hdrAv" style="background:#c4952a">MT</span></span>
+  </div>
+</div></div>
+
+<div class="navbar"><div class="in">
+  <span class="cc"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><g fill="#fff"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="4" r="2.4"/><circle cx="12" cy="20" r="2.4"/><circle cx="4" cy="12" r="2.4"/><circle cx="20" cy="12" r="2.4"/><circle cx="6.3" cy="6.3" r="2"/><circle cx="17.7" cy="17.7" r="2"/><circle cx="17.7" cy="6.3" r="2"/><circle cx="6.3" cy="17.7" r="2"/></g></svg>Culture Cloud</span>
+  <nav aria-label="Culture Cloud">
+    <a href="#home" data-v="home">Home</a>
+    <a href="#ask" data-v="ask">Ask <span class="newtag">NEW</span></a>
+    <a href="#team" data-v="team">My Team</a>
+    <a href="#initiatives" data-v="initiatives">Initiatives</a>
+    <a href="#anniversaries" data-v="anniversaries">Anniversaries</a>
+    <a href="#wellbeing" data-v="wellbeing">Wellbeing</a>
+  </nav>
+  <span class="icons" aria-hidden="true">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <span class="bell"><svg width="17" height="17" viewBox="0 0 24 24" fill="#fff"><path d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5-6.7V3a2 2 0 0 0-4 0v1.3A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/></svg></span>
+  </span>
+</div></div>
+
+<main class="page">
+
+<!-- ================= HOME (Maya) ================= -->
+<section class="view" id="v-home">
+  <div class="home-grid">
+    <div class="stack">
+      <div class="hero">
+        <div><h2>Welcome to Culture Cloud, Maya</h2><p>Day 21 at Ridgeline · Store #14</p></div>
+        <button class="btn" data-compose="">Recognize someone</button>
+      </div>
+
+      <div class="card">
+        <div class="kick-top">
+          <div>
+            <span class="pill ai">NEW HIRE KICKSTART</span>
+            <h3 style="margin-top:6px" id="kickHead">Send your first recognition</h3>
+            <p class="sub">Send 3 recognitions in your first 30 days to earn your custom Ridgeline pin.</p>
+          </div>
+          <span class="day">9 days left</span>
+        </div>
+        <div class="bar"><i id="kickBar" style="width:0%"></i></div>
+        <div class="pct"><span>Progress to your pin</span><b id="kickPct">0%</b></div>
+        <ul class="steps" id="steps"></ul>
+        <div id="claimRow" class="hidden" style="margin-top:12px"><button class="btn" id="claimBtn">Claim your pin</button></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:14px">You were recognized</h3>
+        <div class="row" style="margin-top:10px">
+          <span class="av" style="background:#3f5fc4">JL</span>
+          <div class="grow">
+            <div style="font-size:13px"><b>Jordan Lee</b> <span style="color:var(--muted)">· Store Manager · 2 days ago · +1,000 points</span></div>
+            <p style="margin:4px 0 8px;font-size:13px">"Maya, you jumped right in during the Saturday rush. Customers noticed, and so did I. Great first week!"</p>
+            <button class="btn ghost sm" data-compose="">Pass it on</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;gap:8px;align-items:center"><span class="pill ai">AI SPOTTED</span><h3 style="font-size:14px">Moments worth recognizing</h3></div>
+        <div id="spots" style="margin-top:8px"></div>
+        <p class="sub" style="margin-top:6px">Suggestions come from shift swaps, training records and team chat. You decide whether to send anything.</p>
+      </div>
+
+      <div class="card hidden" id="impactCard">
+        <h3 style="font-size:14px">Your recognition made a difference</h3>
+        <div id="impactList" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:14px">Store #14 recognition feed</h3>
+        <div id="feed" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <aside class="stack">
+      <div class="card">
+        <div class="sub" style="margin:0;font-weight:700;text-transform:uppercase;letter-spacing:.05em">Your points</div>
+        <div class="ptsbig" id="railPts">1,000</div>
+        <div class="bar" style="height:8px"><i style="width:40%"></i></div>
+        <div class="pct"><span>Insulated tumbler · 2,500 pts</span><b>40%</b></div>
+        <div style="margin-top:10px"><a href="#ask" style="font-weight:700;font-size:13px">Ask how points work →</a></div>
+      </div>
+
+      <div class="askmini">
+        <h3>✦ Ask Culture Cloud</h3>
+        <p>Get answers about points, rewards and who to recognize, based on your own program.</p>
+        <div class="chips">
+          <button class="chip" data-ask="close">How close am I to a reward?</button>
+          <button class="chip" data-ask="who">Who should I recognize?</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="sub" style="margin:0 0 8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em">How Culture Cloud reaches Maya</div>
+        <div class="stack" style="gap:8px">
+          <button class="notif" data-compose="dev"><span class="ic" style="background:var(--plum)">PUSH</span><span><span class="m">Push · 2:05 pm, end of shift</span><span class="t">Dev covered your Tuesday close</span><span class="b">Say thanks in about 20 seconds →</span></span></button>
+          <button class="notif" data-compose=""><span class="ic" style="background:var(--good)">NEW</span><span><span class="m">Push · after receiving</span><span class="t">Jordan recognized you!</span><span class="b">Pass it on. Who helped you this week? →</span></span></button>
+          <button class="notif" data-ask="close"><span class="ic" style="background:#3f5fc4">MAIL</span><span><span class="m">Weekly email · Monday</span><span class="t" id="weeklyTitle">You're 0% of the way to your pin</span><span class="b">3 teammates did something worth noticing →</span></span></button>
+          <button class="notif" data-compose="priya"><span class="ic" style="background:#5b5bb0">TEAMS</span><span><span class="m">Teams / Slack · desk staff</span><span class="t">Priya trained 2 new hires</span><span class="b">Recognize her without leaving chat →</span></span></button>
+        </div>
+      </div>
+      <div class="note"><b>Talking point:</b> Per the brief, most people only visit after they <b>receive</b> recognition, so "Pass it on" meets them there. Deskless staff like baristas get a push at the end of a shift instead of being expected to open a website.</div>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= ASK ================= -->
+<section class="view" id="v-ask">
+  <div class="ptitle"><div><h1>Ask Culture Cloud</h1><p>An AI assistant that answers questions about your recognition program, your points and your rewards, using your own Culture Cloud data.</p></div></div>
+  <div class="ask-grid">
+    <div class="chat">
+      <div class="chat-h">
+        <span class="bot-av"><svg width="14" height="14" viewBox="0 0 24 24" fill="#f3c65a"><path d="M12 2l2.6 6.6L21 12l-6.4 3.4L12 22l-2.6-6.6L3 12l6.4-3.4z"/></svg></span>
+        <div><h2>Culture Cloud Assistant</h2><div class="sub">Answers about Ridgeline's program · Concept demo</div></div>
+        <button class="linkbtn" id="clearChat" style="margin-left:auto">Clear</button>
+      </div>
+      <div class="thread" id="thread" aria-live="polite"></div>
+      <div class="prompts" id="prompts"><span class="lab">Try asking</span></div>
+      <form class="composer" id="composer">
+        <label for="askIn" class="hidden">Ask a question</label>
+        <input class="inp" id="askIn" placeholder="Ask about points, rewards, or who to recognize…" autocomplete="off">
+        <button class="btn" type="submit">Ask</button>
+      </form>
+    </div>
+    <aside class="stack">
+      <div class="card ctx">
+        <h3 style="font-size:14px;margin-bottom:10px">What the assistant can see</h3>
+        <dl>
+          <dt>Points balance</dt><dd id="cxPts">1,000</dd>
+          <dt>Recognitions sent</dt><dd id="cxSent">0</dd>
+          <dt>Kickstart progress</dt><dd id="cxKick">0%</dd>
+          <dt>Days left in Kickstart</dt><dd>9</dd>
+          <dt>Moments waiting</dt><dd id="cxSpots">4</dd>
+        </dl>
+        <p class="sub" style="margin-top:10px">Answers are grounded in Maya's account and Ridgeline's program settings, so they're specific to her and not generic advice.</p>
+      </div>
+      <div class="note"><b>Talking point:</b> This addresses barriers from the brief: "Do I have permission?", "not knowing whom to recognize," and "not seeing whether it made a difference." Every answer ends with an action, so asking turns into recognition sent. In this concept the answers are scripted. A real version would use an LLM with access to the employee's account and the customer's program rules.</div>
+      <div class="card">
+        <h3 style="font-size:14px">Guardrails</h3>
+        <ul style="margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--muted)">
+          <li>Only sees the viewer's own data and their program's rules</li>
+          <li>Never sends recognition without the user pressing Send</li>
+          <li>Tells the user to ask HR when it isn't sure</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= MY TEAM (Jordan) ================= -->
+<section class="view" id="v-team">
+  <div class="ptitle"><div><h1>My Team</h1><p>Store #14 · 7 team members. Recognitions Maya sends on the Home tab show up here.</p></div></div>
+  <div class="tiles">
+    <div class="tile"><div class="n" id="tGivers">2 / 7</div><div class="l">Gave recognition in the last 30 days</div></div>
+    <div class="tile"><div class="n" id="tOver" style="color:var(--bad)">3</div><div class="l">Not recognized in 30+ days</div></div>
+    <div class="tile"><div class="n" id="tNew">0 / 2</div><div class="l">New hires who've sent their first</div></div>
+    <div class="tile"><div class="n" id="tMine">3</div><div class="l">Recognitions you sent this month</div></div>
+  </div>
+  <div class="insight" id="insight">
+    <span class="pill ai" style="background:var(--plum);color:#fff">AI INSIGHT</span>
+    <p id="insightText"></p>
+    <button class="btn" id="insightBtn">Recognize now</button>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Team member</th><th>Status</th><th>Last recognized</th><th>Sent (30 days)</th><th>Kickstart</th><th>AI spotted</th><th></th></tr></thead>
+      <tbody id="teamRows"></tbody>
+    </table>
+  </div>
+  <div class="note" style="margin-top:14px"><b>Talking point:</b> According to the brief, 29% of managers have never sent recognition, and leaders don't know who's being overlooked. This view shows both at a glance, and the AI drafts the card so recognizing someone takes one click.</div>
+</section>
+
+<!-- ================= INITIATIVES ================= -->
+<section class="view" id="v-initiatives">
+  <div class="init-wrap">
+    <div class="subtabs"><span class="on">Initiatives <span class="count">3</span></span><span>Settings</span><a href="#impact">Download report</a></div>
+    <div class="filters">
+      <div class="fbox"><small>Status</small>Active ▾</div>
+      <div class="fsearch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Search for an initiative</div>
+      <button class="btn">Create Initiative</button>
+    </div>
+
+    <article class="icard feature">
+      <div class="head"><div><h3>New Hire Kickstart <span class="pill ai" style="margin-left:4px;vertical-align:2px">NEW · AI</span></h3><div class="dates">Start <b>01 Nov 2026</b> · Rolling 30 days per new hire</div></div><span class="pill active">Active</span></div>
+      <div class="bodyr">
+        <div class="art"><svg viewBox="0 0 250 95" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="250" height="95" fill="#3a1630"/><circle cx="200" cy="20" r="60" fill="#8c2b5b"/><rect x="30" y="58" width="150" height="10" rx="5" fill="#5c2a47"/><rect x="30" y="58" width="100" height="10" rx="5" fill="#f3c65a"/><polygon points="205,30 228,43 228,69 205,82 182,69 182,43" fill="#f3c65a"/><polygon points="205,38 221,47 221,65 205,74 189,65 189,47" fill="#8c2b5b"/><path d="M205 48l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#f3c65a"/><circle cx="40" cy="32" r="9" fill="#e9b9d4"/><circle cx="66" cy="32" r="9" fill="#c4952a"/><circle cx="92" cy="32" r="9" fill="#9fb3ea"/></svg></div>
+        <div>
+          <div class="owner"><span class="av" style="background:#555;width:26px;height:26px;font-size:10px">AK</span><span>Alex Kim<small>Initiative Owner · HR</small></span></div>
+          <p class="desc">Every new hire gets a guided first month: AI-suggested moments to recognize, an assistant that writes the message, and a custom pin after 3 recognitions sent in 30 days.</p>
+          <div class="stats"><span>👤 <span id="iPart">2</span> participants</span><span>🏆 <span id="iAwards">0</span> pins earned</span><span><a href="#impact" style="font-weight:700">View report</a></span></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="icard">
+      <div class="head"><div><h3>Co-Worker of the Month</h3><div class="dates">Start <b>09 Oct 2025</b> · No end date</div></div><span class="pill active">Active</span></div>
+      <div class="bodyr">
+        <div class="art"><svg viewBox="0 0 250 95" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="250" height="95" fill="#6e5ad6"/><rect x="40" y="18" width="62" height="56" fill="#fff" transform="rotate(-8 71 46)"/><circle cx="71" cy="40" r="10" fill="#2b2b55"/><circle cx="160" cy="38" r="9" fill="#f2c9a0"/><rect x="150" y="48" width="20" height="30" rx="6" fill="#e2574c"/><circle cx="200" cy="40" r="9" fill="#8a5a3c"/><rect x="190" y="50" width="20" height="28" rx="6" fill="#f3c65a"/><path d="M175 22h14v8a7 7 0 0 1-14 0z" fill="#f3c65a"/></svg></div>
+        <div>
+          <div class="owner"><span class="av" style="background:#555;width:26px;height:26px;font-size:10px">AK</span><span>Alex Kim<small>Initiative Owner</small></span></div>
+          <p class="desc">Nominate any co-worker you'd like to see recognized as co-worker of the month, with a brief description of why. Anybody can nominate.</p>
+          <div class="stats"><span>👤 214 participants</span><span>🏆 12 awards</span></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="icard">
+      <div class="head"><div><h3>Holiday Rush Heroes</h3><div class="dates">Start <b>15 Nov 2026</b> · Ends 05 Jan 2027</div></div><span class="pill active">Active</span></div>
+      <div class="bodyr">
+        <div class="art"><svg viewBox="0 0 250 95" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="250" height="95" fill="#f4e7d2"/><path d="M20 70h210" stroke="#c9a77c" stroke-width="4"/><path d="M50 70l25-40 25 40z" fill="#2e7d4f"/><path d="M110 70l20-32 20 32z" fill="#3f9a63"/><rect x="170" y="40" width="36" height="30" fill="#8c2b5b"/><path d="M168 40h40v-6h-40z" fill="#6f2048"/><path d="M188 34v36" stroke="#f3c65a" stroke-width="4"/></svg></div>
+        <div>
+          <div class="owner"><span class="av" style="background:#555;width:26px;height:26px;font-size:10px">AK</span><span>Alex Kim<small>Initiative Owner</small></span></div>
+          <p class="desc">Points for teammates who keep the line moving and customers smiling through the holiday season. Managers can award extra points for standout shifts.</p>
+          <div class="stats"><span>👤 96 participants</span><span>🏆 4 awards</span></div>
+        </div>
+      </div>
+    </article>
+    <div class="note"><b>Talking point:</b> Kickstart is set up as a standard Culture Cloud <b>Initiative</b>, so HR admins configure it like any other program: they choose the reward, the goal and the time window. That's how it works across customers with different recognition programs.</div>
+  </div>
+</section>
+
+<!-- ================= IMPACT (Admin) ================= -->
+<section class="view" id="v-impact">
+  <div class="ptitle"><div><h1>Kickstart report</h1><p>Admin Home › Initiatives › New Hire Kickstart. How the initiative moves the metric O.C. Tanner cares about: recognition sent.</p></div></div>
+  <div class="facts">
+    <div class="card fact"><div class="n">7%</div><div class="l">of 4.5M eligible employees give recognition in a month. The goal is 100%.</div><div class="s">From the O.C. Tanner product brief</div></div>
+    <div class="card fact"><div class="n">29%</div><div class="l">of about 520,000 managers have never sent recognition</div><div class="s">From the O.C. Tanner product brief</div></div>
+    <div class="card fact"><div class="n">~$10</div><div class="l">in points per eCard, usually redeemed within about 2 years</div><div class="s">From the O.C. Tanner product brief</div></div>
+  </div>
+  <div class="imp-grid">
+    <div class="card">
+      <h3>New-hire cohort: from nudge to repeat giver</h3>
+      <span class="illus">Illustrative pilot targets, not real data</span>
+      <div class="funnel" id="funnel"></div>
+      <h3 style="margin-top:20px">What we'd measure</h3>
+      <p class="sub">Taken from the brief's success measures. Recognition sent is the main outcome.</p>
+      <ul class="mlist">
+        <li><span>First-time givers within 30 days of hire</span><span class="tgt">60%</span><small>Main Phase 1 metric</small></li>
+        <li><span>Employees who give more than once</span><span class="tgt">35%</span><small>Shows recognition is becoming a habit</small></li>
+        <li><span>Start-to-send rate in the recognition flow</span><span class="tgt">80%</span><small>Does the AI writer reduce drop-off?</small></li>
+        <li><span>Days between recognition events</span><span class="tgt">≤ 30</span><small>The GCR goal is at least one send a month</small></li>
+        <li><span>Questions to the assistant that end in a send</span><span class="tgt">25%</span><small>Shows whether Ask turns questions into action</small></li>
+      </ul>
+    </div>
+    <div class="stack">
+      <div class="card">
+        <h3>Why it matters to O.C. Tanner</h3>
+        <div class="calc"><label for="liftIn">If monthly givers rise by</label><input class="inp" type="number" id="liftIn" value="1" min="0" max="93" step="0.5"><span>percentage points</span></div>
+        <div class="calc"><span>and each sends one eCard:</span></div>
+        <div class="calc"><span class="out" id="liftOut">$450,000</span><span>in points sent per month</span></div>
+        <p class="sub" id="liftNote"></p>
+      </div>
+      <div class="card">
+        <h3>Rollout</h3>
+        <div class="phase">
+          <div class="now"><b>Phase 1 · New hires</b>30-day Kickstart, AI writer, Ask assistant, first custom pin</div>
+          <div><b>Phase 2 · Quiet and lapsed givers</b>Reactivation nudges and "pass it on" after receiving</div>
+          <div><b>Phase 3 · Managers</b>Overlooked-employee alerts and team giving coaching</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Works across customer programs</h3>
+        <ul class="mlist">
+          <li><span>No points program?</span><small>The first reward can be a pin, badge or yearbook note</small></li>
+          <li><span>Deskless workforce?</span><small>Push and SMS at the end of a shift. No computer needed.</small></li>
+          <li><span>Office workforce?</span><small>Teams, Slack and Outlook add-ins</small></li>
+          <li><span>Privacy</span><small>Admins choose which data sources the AI can read. Employees can opt out.</small></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="v-stub"><div class="stub"><h2 style="color:var(--ink);font-size:18px">Existing Culture Cloud page</h2><p>This page isn't part of the concept. Try <a href="#home">Home</a>, <a href="#ask">Ask</a>, <a href="#team">My Team</a> or <a href="#initiatives">Initiatives</a>.</p></div></section>
+
+</main>
+<footer>Student concept prototype for the O.C. Tanner IS 4496 brief. Culture Cloud is O.C. Tanner's platform. This mockup shows proposed features only. Figures marked "From the O.C. Tanner product brief" come from the brief. Everything else is sample data.</footer>
+
+<!-- Recognize modal -->
+<div class="modal-bg" id="rBg" role="dialog" aria-modal="true" aria-labelledby="rTitle">
+  <div class="modal">
+    <div class="mh"><svg width="18" height="18" viewBox="0 0 24 24" fill="#8c2b5b"><path d="M7 3h10v3a5 5 0 0 1-10 0zM5 4H3v2a4 4 0 0 0 4 4M19 4h2v2a4 4 0 0 1-4 4M10 13h4v4h3v3H7v-3h3z"/></svg><h2 id="rTitle">Recognize</h2><button class="x" id="rClose" aria-label="Close">×</button></div>
+
+    <div id="rForm">
+      <div class="mb">
+        <label class="fl" for="rTo">To</label>
+        <select class="sel" id="rTo"></select>
+        <label class="fl" for="rWhy">What did they do? <span style="font-weight:400;color:var(--muted)">(your own words)</span></label>
+        <input class="inp" id="rWhy" placeholder="e.g. covered my close so I could study" autocomplete="off">
+        <div class="chips" id="rChips" style="margin-top:8px"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn" id="rDraft">✦ Write it for me</button>
+          <button class="btn ghost" id="rSelf">I'll write it</button>
+        </div>
+        <div class="thinking" id="rThinking" aria-live="polite"></div>
+        <div id="rDraftBox" class="hidden">
+          <label class="fl" for="rMsg">Message (edit anything)</label>
+          <textarea class="area" id="rMsg"></textarea>
+          <label class="fl">Company value</label>
+          <div class="levels" id="rVals"></div>
+          <p class="sub" style="margin-top:8px">Everyday eCards need no approval at Ridgeline. Your manager is cc'd.</p>
+        </div>
+      </div>
+      <div class="mf"><button class="btn ghost" id="rCancel">Cancel</button><button class="btn" id="rSend" disabled>Send recognition</button></div>
+    </div>
+
+    <div id="rDone" class="hidden">
+      <div class="mb center">
+        <div class="check"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <h2 style="font-size:19px" id="dHead">Sent!</h2>
+        <p class="sub" style="font-size:13px" id="dSub"></p>
+        <div style="text-align:left;margin-top:14px" class="card">
+          <span class="pill ai">NEW HIRE KICKSTART</span>
+          <div class="bar"><i id="dBar" style="width:0%"></i></div>
+          <div class="pct"><span id="dNext"></span><b id="dPct">0%</b></div>
+        </div>
+      </div>
+      <div class="mf"><button class="btn ghost" id="dAgain">Recognize someone else</button><button class="btn" id="dClose">Done</button></div>
+    </div>
+
+    <div id="rPin" class="hidden">
+      <div class="mb center">
+        <div style="font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--gold)">KICKSTART COMPLETE</div>
+        <h2 style="font-size:21px;margin-top:4px">You earned your Ridgeline pin</h2>
+        <svg width="150" height="150" viewBox="0 0 170 170" role="img" aria-label="Custom enamel pin with a coffee cup and spark" style="margin:12px auto;display:block">
+          <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3d27a"/><stop offset="1" stop-color="#b7851f"/></linearGradient></defs>
+          <polygon points="85,6 154,46 154,124 85,164 16,124 16,46" fill="url(#g1)"/>
+          <polygon points="85,18 143,52 143,118 85,152 27,118 27,52" fill="#8c2b5b"/>
+          <path d="M60 78h44v22a22 22 0 0 1-44 0z" fill="#f2eff5"/>
+          <path d="M104 84h6a8 8 0 0 1 0 16h-6" fill="none" stroke="#f2eff5" stroke-width="5"/>
+          <path d="M82 44l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#f3d27a"/>
+          <text x="85" y="138" text-anchor="middle" font-family="Open Sans, sans-serif" font-size="11" font-weight="800" fill="#f3d27a" letter-spacing="1.5">FIRST 30</text>
+        </svg>
+        <p class="sub" style="font-size:13px">A custom enamel pin ships to Store #14. Next up: keep a monthly streak to unlock your 3-month pin.</p>
+      </div>
+      <div class="mf"><button class="btn" id="pClose">Back to Home</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Manager modal -->
+<div class="modal-bg" id="mBg" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal">
+    <div class="mh"><h2 id="mTitle">Recognize</h2><button class="x" id="mX" aria-label="Close">×</button></div>
+    <div class="mb">
+      <div class="sub" id="mSub" style="margin-bottom:10px;font-size:12.5px"></div>
+      <label class="fl" for="mMsg">AI draft (edit anything)</label>
+      <textarea class="area" id="mMsg"></textarea>
+      <div class="thinking" id="mThinking" aria-live="polite"></div>
+    </div>
+    <div class="mf"><button class="btn ghost" id="mRedo">Try again</button><button class="btn" id="mSend">Send recognition</button></div>
+  </div>
+</div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+/* ---------- Data ---------- */
+const people = {
+  dev:   {name:"Dev Patel", first:"Dev", role:"Barista", color:"#c0563a", lastRecv:41, sent30:0, status:"quiet", spotted:"Covered Maya's Tuesday close and picked up 3 extra shifts", why:"covered my Tuesday close so I could study for my exam", line:"covered your Tuesday close so you could study", src:"Shift swap · Tue"},
+  priya: {name:"Priya Shah", first:"Priya", role:"Shift Lead", color:"#3f5fc4", lastRecv:5, sent30:4, status:"active", spotted:"Trained 2 new hires on the espresso bar", why:"trained me on the espresso bar and was really patient", line:"trained you on the espresso bar", src:"Training record · Mon"},
+  sam:   {name:"Sam Okafor", first:"Sam", role:"Barista", color:"#2e7d4f", lastRecv:52, sent30:0, status:"lapsed", spotted:"Zero order errors through the holiday rush", why:"kept the line moving with zero order mistakes during the rush", line:"made zero order mistakes during the weekend rush", src:"Store metrics · Sat"},
+  lena:  {name:"Lena Brooks", first:"Lena", role:"Barista", color:"#9a5bc0", lastRecv:12, sent30:1, status:"active", spotted:"Restocked the whole back room before inventory", why:"restocked the back room before inventory without being asked", line:"restocked the back room before inventory", src:"Team chat · Thu"},
+  ana:   {name:"Ana Lim", first:"Ana", role:"Assistant Manager", color:"#a8620c", lastRecv:19, sent30:2, status:"active", spotted:"Fixed the weekend schedule conflict", why:"fixed the weekend schedule conflict fast", src:"Scheduling · Fri"},
+  maya:  {name:"Maya Torres", first:"Maya", role:"Barista · new hire", color:"#c4952a", lastRecv:2, sent30:0, status:"new", spotted:"Handled the Saturday rush in week one", why:"jumped in during the Saturday rush", src:"Manager note"},
+  marco: {name:"Marco Ruiz", first:"Marco", role:"Barista · new hire", color:"#3a8f9a", lastRecv:null, sent30:0, status:"new", spotted:"Finished onboarding modules early", why:"finished onboarding ahead of schedule", src:"LMS · Wed"},
+  jordan:{name:"Jordan Lee", first:"Jordan", role:"Store Manager", color:"#3f5fc4", why:"gave me a great first week"}
+};
+const mayaPeers = ["dev","priya","lena","sam","jordan"];
+const values = ["Teamwork","Above & Beyond","Customer First","Helping Hand"];
+const GOAL = 3, POINTS = 1000;
+let mayaSent = 0, pinClaimed = false, chosenValue = values[0];
+const sentTo = new Set(), managerSent = new Set();
+const feed = [
+  {from:"jordan", to:"Maya", msg:"You jumped right in during the Saturday rush. Customers noticed, and so did I.", val:"Customer First", ago:"2 days ago", hearts:6},
+  {from:"priya", to:"Lena", msg:"Thank you for restocking the back room before inventory. You saved us an hour on Friday!", val:"Above & Beyond", ago:"4 days ago", hearts:4},
+  {from:"ana", to:"Priya", msg:"Two new hires trained in one week, and both are already pulling great shots. Amazing work.", val:"Helping Hand", ago:"6 days ago", hearts:9}
+];
+
+const $ = s => document.querySelector(s);
+const initials = n => n.split(" ").map(w=>w[0]).join("");
+const fmt = n => n.toLocaleString("en-US");
+const pct = () => pinClaimed ? 100 : Math.round(Math.min(mayaSent,GOAL)/GOAL*100);
+const openSpots = () => ["dev","priya","sam","lena"].filter(id=>!sentTo.has(id));
+
+/* ---------- Live AI drafting (Claude via sample capability, template fallback) ---------- */
+let sample = null;
+try { if (window.claude && claude.use) claude.use("sample").then(s=>{ sample = s; }).catch(()=>{}); } catch(e){}
+function fallbackDraft(to, why, from){
+  const w = (why||"").trim().replace(/[.!]+$/,"") || "always showing up for the team";
+  const lw = w.toLowerCase();
+  let val = "Teamwork";
+  if (/customer|line|rush|order|guest/.test(lw)) val = "Customer First";
+  else if (/train|taught|help|patient|show|week/.test(lw)) val = "Helping Hand";
+  else if (/extra|without being asked|early|fast|fixed|cover|ahead/.test(lw)) val = "Above & Beyond";
+  const msg = from==="manager"
+    ? `${to}, I wanted to call this out: you ${w}. That kind of work is easy to miss, but it makes the whole store run better, and I noticed. Thank you.`
+    : `${to}, thank you for being there when it counted. You ${w}, and it made a real difference for me. I'm lucky to be on a team with you!`;
+  return {message:msg, value:val};
+}
+async function aiDraft(to, why, from){
+  if (!sample) return fallbackDraft(to, why, from);
+  const prompt = `You write short workplace recognition messages for an employee recognition app.
+Sender: ${from==="manager" ? "a store manager writing to a team member" : "a new-hire barista writing to a coworker"}.
+Recipient first name: ${to}.
+What they did, in the sender's words: "${why}".
+Write 2 to 3 warm, specific sentences in the sender's voice. Mention the specific action. No hashtags, no emoji, no clichés, under 55 words.
+Pick the best company value from exactly this list: ${values.join(", ")}.
+Reply with only JSON: {"message":"...","value":"..."}`;
+  try{
+    const r = await sample(prompt, {modelTier:"quick", cache:false});
+    const m = (r.text||"").match(/\{[\s\S]*\}/);
+    const j = JSON.parse(m ? m[0] : r.text);
+    if (!j.message) throw new Error("empty");
+    if (!values.includes(j.value)) j.value = fallbackDraft(to, why, from).value;
+    return j;
+  }catch(e){
+    if (e && e.code==="not_granted") sample = null;
+    return fallbackDraft(to, why, from);
+  }
+}
+
+/* ---------- Routing ---------- */
+const personaFor = {
+  home:["Maya Torres (She/Her)","MT","#c4952a","Viewing as Maya Torres (new hire)", fmt(POINTS)],
+  ask:["Maya Torres (She/Her)","MT","#c4952a","Viewing as Maya Torres (new hire)", fmt(POINTS)],
+  team:["Jordan Lee (He/Him)","JL","#3f5fc4","Viewing as Jordan Lee (store manager)","4,200"],
+  initiatives:["Alex Kim (They/Them)","AK","#555","Viewing as Alex Kim (HR program admin)","2,750"],
+  impact:["Alex Kim (They/Them)","AK","#555","Viewing as Alex Kim (HR program admin)","2,750"]
+};
+function showView(v){
+  const known = ["home","ask","team","initiatives","impact"];
+  const target = known.includes(v) ? v : (v==="anniversaries"||v==="wellbeing" ? "stub" : "home");
+  document.querySelectorAll(".view").forEach(el=>el.classList.toggle("on", el.id==="v-"+target));
+  document.querySelectorAll(".navbar nav a").forEach(a=>a.setAttribute("aria-current", a.dataset.v===(known.includes(v)?v:(target==="stub"?v:"home")) ? "page" : "false"));
+  const p = personaFor[target] || personaFor.home;
+  $("#hdrName").textContent = p[0]; $("#hdrAv").textContent = p[1]; $("#hdrAv").style.background = p[2];
+  $("#viewingAs").textContent = p[3]; $("#hdrPts").textContent = p[4];
+  if (target==="team") renderTeam();
+  if (target==="ask") { renderCtx(); if (!$("#thread").children.length) greet(); }
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange", ()=>showView(location.hash.slice(1)));
+
+$("#notesBtn").addEventListener("click", e=>{
+  const on = document.body.classList.toggle("notes");
+  e.currentTarget.setAttribute("aria-pressed", on);
+});
+
+/* ---------- Home ---------- */
+function renderHome(){
+  const p = pct();
+  $("#kickBar").style.width = p+"%"; $("#kickPct").textContent = p+"%";
+  $("#weeklyTitle").textContent = mayaSent>=GOAL ? "You earned your Ridgeline pin!" : `You're ${p}% of the way to your pin`;
+  const steps = [["Set up account",true],["Receive first recognition",true],["Send your first",mayaSent>=1],[`Send 3 (${Math.min(mayaSent,GOAL)}/${GOAL})`,mayaSent>=GOAL],["Earn your pin",pinClaimed]];
+  const next = steps.findIndex(s=>!s[1]);
+  $("#kickHead").textContent = next===-1 ? "Kickstart complete. Nice work!" : next===2 ? "Send your first recognition" : next===3 ? `Send ${GOAL-mayaSent} more to earn your pin` : "Your pin is ready to claim";
+  $("#steps").innerHTML = steps.map((s,i)=>`<li class="${s[1]?"done":(i===next?"next":"")}"><span class="dot">${s[1]?"✓":""}</span>${s[0]}</li>`).join("");
+  $("#claimRow").classList.toggle("hidden", !(mayaSent>=GOAL && !pinClaimed));
+  const ids = openSpots();
+  $("#spots").innerHTML = ids.length ? ids.slice(0,3).map(id=>{
+    const q = people[id];
+    return `<div class="spot"><span class="av" style="background:${q.color}">${initials(q.name)}</span><div class="grow"><b>${q.first}</b> ${q.line}<div class="src">${q.src}</div></div><button class="btn ghost sm" data-compose="${id}">Recognize</button></div>`;
+  }).join("") : `<p class="sub" style="font-size:13px">You've recognized everyone the AI spotted this week. Nice.</p>`;
+  $("#feed").innerHTML = feed.map((f,i)=>{
+    const q = people[f.from];
+    return `<div class="feed-item ${f.fresh?"fresh":""}"><span class="av" style="background:${q.color}">${initials(q.name)}</span><div class="grow" style="flex:1"><div class="who"><b>${q.name}</b> recognized <b>${f.to}</b> <span style="color:var(--muted)">· ${f.ago}</span></div><div class="val">${f.val}</div><p class="msg">${f.msg}</p><div class="reacts"><button data-heart="${i}" aria-pressed="${!!f.liked}">❤ ${f.hearts+(f.liked?1:0)}</button><button>💬 Comment</button></div></div></div>`;
+  }).join("");
+  feed.forEach(f=>f.fresh=false);
+  $("#feed").querySelectorAll("[data-heart]").forEach(b=>b.addEventListener("click",()=>{ const f=feed[+b.dataset.heart]; f.liked=!f.liked; renderHome(); }));
+  bindCompose($("#spots"));
+}
+$("#claimBtn").addEventListener("click", ()=>{
+  pinClaimed = true; renderHome(); confetti();
+  openModalShell(); show("rPin");
+});
+
+/* ---------- Recognize modal ---------- */
+function show(id){ ["rForm","rDone","rPin"].forEach(x=>$("#"+x).classList.toggle("hidden", x!==id)); }
+function openModalShell(){ $("#rBg").classList.add("on"); }
+function closeR(){ $("#rBg").classList.remove("on"); }
+function bindCompose(root){ root.querySelectorAll("[data-compose]").forEach(b=>{ if (b._b) return; b._b=1; b.addEventListener("click",()=>openCompose(b.dataset.compose)); }); }
+function openCompose(id){
+  $("#rTo").innerHTML = mayaPeers.map(k=>`<option value="${k}">${people[k].name} · ${people[k].role}</option>`).join("");
+  if (id) $("#rTo").value = id;
+  $("#rWhy").value = id ? people[id].why : "";
+  $("#rDraftBox").classList.add("hidden"); $("#rSend").disabled = true; $("#rThinking").textContent = "";
+  $("#rTitle").textContent = "Recognize";
+  renderChips(); show("rForm"); openModalShell();
+  setTimeout(()=>$("#rWhy").focus(),50);
+}
+function renderChips(){
+  const k = $("#rTo").value, q = people[k];
+  const opts = k==="jordan" ? ["gave me a great first week","answered all my questions"] : [q.why];
+  $("#rChips").innerHTML = `<span class="src">AI suggests:</span>` + opts.map(o=>`<button class="chip" type="button">${o}</button>`).join("");
+  $("#rChips").querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{ $("#rWhy").value = c.textContent; }));
+}
+$("#rTo").addEventListener("change", renderChips);
+function renderVals(){
+  $("#rVals").innerHTML = values.map(v=>`<button type="button" aria-pressed="${v===chosenValue}">${v}</button>`).join("");
+  $("#rVals").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{ chosenValue=b.textContent; renderVals(); }));
+}
+async function doDraft(){
+  const k = $("#rTo").value, why = $("#rWhy").value.trim();
+  if (!why){ $("#rThinking").textContent = "Add a few words about what they did, or tap the suggestion."; $("#rWhy").focus(); return; }
+  $("#rDraft").disabled = true; $("#rThinking").textContent = "✦ Writing your message…";
+  const d = await aiDraft(people[k].first, why, "peer");
+  $("#rMsg").value = d.message; chosenValue = d.value; renderVals();
+  $("#rDraftBox").classList.remove("hidden"); $("#rSend").disabled = false; $("#rDraft").disabled = false;
+  $("#rDraft").textContent = "✦ Try another version";
+  $("#rThinking").textContent = sample ? "Drafted by AI. Edit it so it sounds like you." : "Drafted from a template (AI unavailable here). Edit it so it sounds like you.";
+}
+$("#rDraft").addEventListener("click", doDraft);
+$("#rSelf").addEventListener("click", ()=>{ $("#rMsg").value=""; chosenValue=values[0]; renderVals(); $("#rDraftBox").classList.remove("hidden"); $("#rSend").disabled=false; $("#rMsg").focus(); });
+$("#rSend").addEventListener("click", ()=>{
+  const k = $("#rTo").value, msg = $("#rMsg").value.trim();
+  if (!msg){ $("#rMsg").focus(); return; }
+  mayaSent++; sentTo.add(k); people.maya.sent30 = mayaSent;
+  if (people[k].lastRecv !== undefined) people[k].lastRecv = 0;
+  feed.unshift({from:"maya", to:people[k].first, msg, val:chosenValue, ago:"just now", hearts:0, fresh:true});
+  const p = pct();
+  $("#dHead").textContent = `Sent to ${people[k].first}`;
+  $("#dSub").textContent = `${people[k].first} gets a push notification, and your message shows in the Store #14 feed.`;
+  $("#dNext").textContent = mayaSent>=GOAL ? "Pin unlocked! Claim it on Home" : `Send ${GOAL-mayaSent} more to earn your pin`;
+  $("#dPct").textContent = p+"%"; $("#dBar").style.width = "0%";
+  show("rDone"); confetti();
+  setTimeout(()=>{ $("#dBar").style.width = p+"%"; }, 80);
+  $("#rDraft").textContent = "✦ Write it for me";
+  renderHome();
+  setTimeout(()=>{
+    $("#impactCard").classList.remove("hidden");
+    $("#impactList").insertAdjacentHTML("afterbegin", `<div class="spot"><span class="av" style="background:${people[k].color};width:28px;height:28px;font-size:11px">${initials(people[k].name)}</span><div class="grow"><b>${people[k].first}</b> loved your recognition ❤ "This made my week, thank you!"</div></div>`);
+    const f = feed.find(x=>x.from==="maya" && x.to===people[k].first); if (f){ f.hearts = 3; renderHome(); }
+  }, 2600);
+});
+$("#dAgain").addEventListener("click", ()=>{ const n = mayaPeers.find(k=>!sentTo.has(k)) || "jordan"; openCompose(n); });
+["#rClose","#rCancel","#dClose","#pClose"].forEach(s=>$(s).addEventListener("click", closeR));
+$("#rBg").addEventListener("click", e=>{ if (e.target.id==="rBg") closeR(); });
+document.addEventListener("keydown", e=>{ if (e.key==="Escape"){ closeR(); $("#mBg").classList.remove("on"); } });
+
+function confetti(){
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box = $("#confetti"); box.innerHTML = "";
+  const cols = ["#c4952a","#8c2b5b","#3f5fc4","#2e7d4f","#e9b9d4"];
+  for (let i=0;i<50;i++){ const c=document.createElement("i"); c.style.left=Math.random()*100+"%"; c.style.background=cols[i%cols.length]; c.style.animationDelay=(Math.random()*.4)+"s"; box.appendChild(c); }
+  setTimeout(()=>box.innerHTML="", 2300);
+}
+
+/* ---------- Ask assistant (scripted answers built from live account data) ---------- */
+const presets = [
+  ["close","How close am I to my next reward?"],
+  ["points","How do recognition points work?"],
+  ["who","Who should I recognize this week?"],
+  ["permission","Do I need permission to recognize someone?"],
+  ["store","What can I get with my points?"],
+  ["write","Help me write a thank-you for Dev"]
+];
+function bar(p){ return `<div class="bar"><i style="width:${p}%"></i></div>`; }
+const answers = {
+  close(){
+    const p = pct(), left = Math.max(GOAL-mayaSent,0);
+    const kick = pinClaimed ? `<p>You've already earned your <b>Kickstart pin</b> 🎉 and it's on its way to Store #14.</p>`
+      : `<div class="rcard"><div class="top">Kickstart custom pin <span>${p}%</span></div>${bar(p)}<div class="s">${Math.min(mayaSent,GOAL)} of 3 recognitions sent · 9 days left</div></div>`;
+    const ids = openSpots();
+    const tail = (!pinClaimed && left>0)
+      ? `<p><b>Fastest path:</b> send ${left} more recognition${left>1?"s":""} before day 30. ${ids.length ? `${people[ids[0]].first}${ids[1]?" and "+people[ids[1]].first:""} both have moments waiting.` : ""}</p>${ids[0]?`<button class="btn sm" data-compose="${ids[0]}">Recognize ${people[ids[0]].first}</button>`:""}`
+      : (mayaSent>=GOAL && !pinClaimed ? `<p>You've hit 3 sends! Claim your pin on Home.</p><a class="btn sm" href="#home" style="text-decoration:none;display:inline-block">Go to Home</a>` : "");
+    return `<p>You have two rewards in progress:</p>${kick}<div class="rcard"><div class="top">Insulated tumbler (Store) <span>40%</span></div>${bar(40)}<div class="s">${fmt(POINTS)} of 2,500 points · 1,500 to go</div></div>${tail}`;
+  },
+  points(){
+    return `<p>Here's how points work in Ridgeline's program:</p>
+      <ul><li><b>You earn points when someone recognizes you.</b> Jordan's message last week added 1,000 points.</li>
+      <li><b>Sending recognition never costs you points.</b> The company funds it, so you can give as often as you like.</li>
+      <li><b>Spend points in the Store</b> on awards and merchandise. Most people redeem within about two years.</li>
+      <li><b>Formal award nominations</b> are worth more than everyday eCards, but they need a manager's approval.</li></ul>
+      <p>Your Kickstart pin is different: you earn it by <b>giving</b> recognition, not by collecting points.</p>
+      <p class="src">Point values depend on how your company sets up its program. Ask HR if you're unsure.</p>`;
+  },
+  who(){
+    const ids = openSpots();
+    if (!ids.length) return `<p>You've already recognized everyone I spotted this week. That's great! I'll let you know when I see new moments.</p>`;
+    return `<p>Here's who I'd suggest this week, based on shift swaps, training records and team chat:</p>` +
+      ids.map(id=>`<div class="rcard"><div class="top">${people[id].name} <span style="color:var(--muted);font-weight:600">${people[id].src}</span></div><div class="s" style="margin:4px 0 8px;color:var(--ink)">${people[id].first} ${people[id].line}.${people[id].lastRecv>=30?` Hasn't been recognized in <b>${people[id].lastRecv} days</b>.`:""}</div><button class="btn sm" data-compose="${id}">Recognize ${people[id].first}</button></div>`).join("");
+  },
+  permission(){
+    return `<p><b>No permission needed.</b> At Ridgeline, anyone can send an everyday eCard to anyone, including your manager, people on other shifts and people at other stores.</p>
+      <ul><li><b>eCards:</b> no approval, delivered right away</li><li><b>Award nominations:</b> your manager approves these first</li></ul>
+      <p>New hires often wait until they "know people better." You don't have to. A specific thank-you in your first month is one of the best ways to get to know your team.</p>
+      <button class="btn sm" data-compose="">Send an eCard</button>`;
+  },
+  store(){
+    const items = [["Ridgeline beanie",800],["Insulated tumbler",2500],["Wireless earbuds",6000],["Ridgeline hoodie",4000]];
+    return `<p>You have <b>${fmt(POINTS)} points</b>. Here's a sample from the Store:</p><div class="rcard">` +
+      items.map(([n,c])=>`<div class="cat"><span>${n}</span><span class="c">${fmt(c)}</span><small>${c<=POINTS?"✓ You can get this now":`${fmt(c-POINTS)} more points needed`}</small></div>`).join("") +
+      `</div><p>Points come from being recognized. When you recognize teammates, they often return the favor.</p>`;
+  },
+  write(){
+    setTimeout(()=>openCompose("dev"), 900);
+    return `<p>Sure. Dev covered your Tuesday close so you could study. I'm opening a draft now. Edit it however you like before you send it.</p>`;
+  }
+};
+function route(text){
+  const t = text.toLowerCase();
+  if (/close|reward|pin|progress|how far|next/.test(t)) return "close";
+  if (/permission|allowed|approv|can i/.test(t)) return "permission";
+  if (/store|buy|get with|catalog|redeem|spend/.test(t)) return "store";
+  if (/point|work|how does/.test(t)) return "points";
+  if (/who|someone|recogni/.test(t)) return "who";
+  if (/write|draft|thank/.test(t)) return "write";
+  return null;
+}
+function addUser(text){ $("#thread").insertAdjacentHTML("beforeend", `<div class="bub user">${text.replace(/</g,"&lt;")}</div>`); }
+function addBot(html){
+  const el = document.createElement("div"); el.className = "bub bot";
+  el.innerHTML = `<span class="bot-av"><svg width="13" height="13" viewBox="0 0 24 24" fill="#f3c65a"><path d="M12 2l2.6 6.6L21 12l-6.4 3.4L12 22l-2.6-6.6L3 12l6.4-3.4z"/></svg></span><div class="body"><div class="typing"><i></i><i></i><i></i></div></div>`;
+  $("#thread").appendChild(el); $("#thread").scrollTop = $("#thread").scrollHeight;
+  setTimeout(()=>{ el.querySelector(".body").innerHTML = typeof html==="function" ? html() : html; bindCompose(el); $("#thread").scrollTop = $("#thread").scrollHeight; }, 750);
+}
+function ask(key, label){
+  addUser(label);
+  if (key && answers[key]) addBot(answers[key]);
+  else addBot(`<p>This concept demo answers the suggested questions below. In the full version, I'd answer anything about your recognition program using your account and Ridgeline's program settings.</p>`);
+}
+function greet(){ addBot(`<p>Hi Maya! I can answer questions about your points, your rewards and recognizing your teammates. What would you like to know?</p>`); }
+$("#prompts").insertAdjacentHTML("beforeend", presets.map(([k,l])=>`<button class="chip" data-p="${k}">${l}</button>`).join(""));
+$("#prompts").querySelectorAll("[data-p]").forEach(b=>b.addEventListener("click",()=>ask(b.dataset.p, b.textContent)));
+$("#composer").addEventListener("submit", e=>{ e.preventDefault(); const v=$("#askIn").value.trim(); if(!v) return; $("#askIn").value=""; ask(route(v), v); });
+$("#clearChat").addEventListener("click", ()=>{ $("#thread").innerHTML=""; greet(); });
+document.querySelectorAll("[data-ask]").forEach(b=>b.addEventListener("click",()=>{
+  const k = b.dataset.ask, l = presets.find(p=>p[0]===k)[1];
+  location.hash = "ask"; setTimeout(()=>ask(k,l), 60);
+}));
+function renderCtx(){ $("#cxPts").textContent = fmt(POINTS); $("#cxSent").textContent = mayaSent; $("#cxKick").textContent = pct()+"%"; $("#cxSpots").textContent = openSpots().length; }
+
+/* ---------- My Team ---------- */
+const teamOrder = ["dev","sam","priya","lena","ana","maya","marco"];
+let mFor = null;
+function statusPill(p){
+  const map = {active:["active","Active giver"],quiet:["quiet","Hasn't given yet"],lapsed:["lapsed","Stopped giving"],new:["new","New hire"]};
+  let s = p.status; if (s!=="new" && p.sent30>0) s="active";
+  return `<span class="pill ${map[s][0]}">${map[s][1]}</span>`;
+}
+function renderTeam(){
+  $("#teamRows").innerHTML = teamOrder.map(id=>{
+    const p = people[id];
+    const recv = p.lastRecv===null ? `<span class="over">Never</span>` : p.lastRecv===0 ? "Today" : p.lastRecv>=30 ? `<span class="over">${p.lastRecv} days ago</span>` : `${p.lastRecv} days ago`;
+    let kick = `<span style="color:var(--muted)">n/a</span>`;
+    if (id==="maya"){ const k=pct(); kick = `<span class="mini"><i style="width:${k}%"></i></span>${k}%`; }
+    if (id==="marco") kick = `<span class="mini"><i style="width:0%"></i></span>0%`;
+    const done = managerSent.has(id);
+    return `<tr><td><div class="who"><span class="av" style="background:${p.color}">${initials(p.name)}</span><span><b>${p.name}</b><small>${p.role}</small></span></div></td><td>${statusPill(p)}</td><td class="num">${recv}</td><td class="num">${p.sent30}</td><td class="num">${kick}</td><td style="color:var(--muted);max-width:230px">${p.spotted}</td><td><button class="btn ghost sm" data-rec="${id}" ${done?"disabled":""}>${done?"Sent ✓":"Recognize"}</button></td></tr>`;
+  }).join("");
+  $("#teamRows").querySelectorAll("[data-rec]").forEach(b=>b.addEventListener("click",()=>openM(b.dataset.rec)));
+  const givers = teamOrder.filter(id=>people[id].sent30>0).length;
+  const over = teamOrder.filter(id=>people[id].lastRecv===null || people[id].lastRecv>=30).length;
+  $("#tGivers").textContent = `${givers} / ${teamOrder.length}`;
+  $("#tOver").textContent = over; $("#tOver").style.color = over ? "var(--bad)" : "var(--good)";
+  $("#tNew").textContent = `${["maya","marco"].filter(id=>people[id].sent30>0).length} / 2`;
+  $("#tMine").textContent = 3 + managerSent.size;
+  const t = ["sam","dev","marco"].find(id=>!managerSent.has(id) && (people[id].lastRecv===null || people[id].lastRecv>=30));
+  $("#insight").classList.toggle("hidden", !t);
+  if (t){
+    const p = people[t];
+    $("#insightText").innerHTML = p.lastRecv===null
+      ? `<b>${p.name}</b> started 2 weeks ago and hasn't been recognized yet. ${p.spotted}. New hires recognized in their first month are more likely to start giving themselves.`
+      : `<b>${p.name}</b> hasn't been recognized in ${p.lastRecv} days, but they ${p.spotted.charAt(0).toLowerCase()+p.spotted.slice(1)}.${p.status==="lapsed"?" Sam used to give often and stopped. Recognition from you could bring them back.":""}`;
+    $("#insightBtn").onclick = ()=>openM(t);
+  }
+}
+async function openM(id){
+  mFor = id; const p = people[id];
+  $("#mTitle").textContent = `Recognize ${p.first}`;
+  $("#mSub").innerHTML = `<span class="pill ai">AI SPOTTED</span> ${p.spotted} · ${p.src}`;
+  $("#mMsg").value = ""; $("#mBg").classList.add("on");
+  await mDraft();
+}
+async function mDraft(){
+  const p = people[mFor];
+  $("#mThinking").textContent = "✦ Drafting…"; $("#mSend").disabled = true; $("#mRedo").disabled = true;
+  const d = await aiDraft(p.first, (p.spotted.charAt(0).toLowerCase()+p.spotted.slice(1)), "manager");
+  $("#mMsg").value = d.message;
+  $("#mThinking").textContent = `Suggested value: ${d.value}. ${sample?"Drafted by AI.":"Template draft (AI unavailable here)."}`;
+  $("#mSend").disabled = false; $("#mRedo").disabled = false;
+}
+$("#mRedo").addEventListener("click", mDraft);
+$("#mX").addEventListener("click", ()=>$("#mBg").classList.remove("on"));
+$("#mBg").addEventListener("click", e=>{ if (e.target.id==="mBg") $("#mBg").classList.remove("on"); });
+$("#mSend").addEventListener("click", ()=>{
+  people[mFor].lastRecv = 0; managerSent.add(mFor);
+  $("#mBg").classList.remove("on"); renderTeam(); confetti();
+});
+
+/* ---------- Impact ---------- */
+$("#funnel").innerHTML = [["Got a Kickstart nudge",100],["Opened the nudge",72],["Started the flow",58],["Sent first recognition",48],["Sent 2 or more",31],["Earned the pin (3 sends)",22]]
+  .map(([l,v])=>`<div class="frow"><span>${l}</span><span class="ftrack"><i style="width:${v}%"></i></span><span class="v">${v}%</span></div>`).join("");
+function calcLift(){
+  let v = parseFloat($("#liftIn").value); if (isNaN(v)||v<0) v=0; if (v>93) v=93;
+  const g = Math.round(4500000*v/100);
+  $("#liftOut").textContent = "$"+fmt(g*10);
+  $("#liftNote").textContent = `4.5M eligible × ${v}% = ${fmt(g)} more givers × ~$10 per eCard`;
+}
+$("#liftIn").addEventListener("input", calcLift); calcLift();
+
+/* ---------- Init ---------- */
+bindCompose(document);
+renderHome(); renderVals();
+showView(location.hash.slice(1));
+</script>
+</body>
+</html>

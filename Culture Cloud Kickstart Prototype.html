@@ -144,6 +144,10 @@ body.notes .note{display:block}
 .notif .t{display:block;font-weight:700;font-size:12.5px;line-height:1.35}
 .notif .m{display:block;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:700}
 .notif .b{display:block;font-size:12px;color:var(--muted)}
+.pill.teams{background:#e8e8f6;color:#4b4ba0;font-weight:700;font-size:11px;letter-spacing:.03em}
+.teams-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.teams-toggle{margin-left:auto;display:flex;gap:6px;align-items:center;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer}
+.mtg{font-size:11px;font-weight:700;color:var(--muted);margin:12px 0 2px;text-transform:uppercase;letter-spacing:.04em}
 .askmini{background:var(--plum-soft);border:1px solid #e9cddc;border-radius:4px;padding:14px 16px}
 .askmini h3{font-size:15px}
 .askmini p{margin:4px 0 10px;font-size:12.5px;color:#5a3a4b}
@@ -352,6 +356,7 @@ footer{max-width:1100px;margin:0 auto;padding:0 20px 30px;color:var(--muted);fon
         </div>
         <div class="bar"><i id="kickBar" style="width:0%"></i></div>
         <div class="pct"><span>Progress to your pin</span><b id="kickPct">0%</b></div>
+        <div id="kickStartRow" style="margin-top:12px"><button class="btn" id="kickStartBtn">Get Started</button></div>
         <ul class="steps" id="steps"></ul>
         <div id="claimRow" class="hidden" style="margin-top:12px"><button class="btn" id="claimBtn">Claim your pin</button></div>
       </div>
@@ -372,6 +377,16 @@ footer{max-width:1100px;margin:0 auto;padding:0 20px 30px;color:var(--muted);fon
         <div style="display:flex;gap:8px;align-items:center"><span class="pill ai">AI SPOTTED</span><h3 style="font-size:14px">Moments worth recognizing</h3></div>
         <div id="spots" style="margin-top:8px"></div>
         <p class="sub" style="margin-top:6px">Suggestions come from shift swaps, training records and team chat. You decide whether to send anything.</p>
+      </div>
+
+      <div class="card" id="teamsCard">
+        <div class="teams-h">
+          <span class="pill teams">MICROSOFT TEAMS · SIMULATED</span>
+          <h3 style="font-size:14px">From your Teams meetings</h3>
+          <label class="teams-toggle"><input type="checkbox" id="teamsToggle" checked> Show meeting suggestions</label>
+        </div>
+        <div id="teamsSuggestions"></div>
+        <p class="sub" style="margin-top:8px">Simulated integration: these meetings are fictional sample data and nothing connects to Microsoft. You review and edit every message, and nothing is sent until you press Send.</p>
       </div>
 
       <div class="card hidden" id="impactCard">
@@ -688,6 +703,15 @@ const feed = [
   {from:"priya", to:"Lena", msg:"Thank you for restocking the back room before inventory. You saved us an hour on Friday!", val:"Above & Beyond", ago:"4 days ago", hearts:4},
   {from:"ana", to:"Priya", msg:"Two new hires trained in one week, and both are already pulling great shots. Amazing work.", val:"Helping Hand", ago:"6 days ago", hearts:9}
 ];
+/* Simulated Microsoft Teams meetings (fictional sample data, no real Teams connection) */
+let teamsOn = true;
+const teamsMeetings = [
+  {title:"Store #14 weekly huddle", when:"Today · 9:00 am", attendees:6, suggest:[
+    {id:"priya", line:"walked the team through the new holiday drink builds", why:"walked everyone through the new holiday drink builds in our weekly huddle"},
+    {id:"sam", line:"shared tips for keeping the rush line moving", why:"shared great tips for keeping the rush line moving in our huddle"}]},
+  {title:"Espresso bar refresher", when:"Mon · 3:30 pm", attendees:4, suggest:[
+    {id:"lena", line:"demoed milk steaming for the new hires", why:"showed the new hires how to steam milk properly in the espresso refresher"}]}
+];
 
 const $ = s => document.querySelector(s);
 const initials = n => n.split(" ").map(w=>w[0]).join("");
@@ -781,11 +805,30 @@ function renderHome(){
   feed.forEach(f=>f.fresh=false);
   $("#feed").querySelectorAll("[data-heart]").forEach(b=>b.addEventListener("click",()=>{ const f=feed[+b.dataset.heart]; f.liked=!f.liked; renderHome(); }));
   bindCompose($("#spots"));
+  $("#kickStartRow").classList.toggle("hidden", mayaSent>=GOAL);
+  renderTeams();
 }
 $("#claimBtn").addEventListener("click", ()=>{
   pinClaimed = true; renderHome(); confetti();
   openModalShell(); show("rPin");
 });
+/* Get Started: open the recognition pop-up for the first suggested coworker (editable before sending) */
+$("#kickStartBtn").addEventListener("click", ()=>openCompose(openSpots()[0] || ""));
+
+/* ---------- Simulated Teams meeting suggestions ---------- */
+function renderTeams(){
+  const box = $("#teamsSuggestions");
+  if (!teamsOn){ box.innerHTML = `<p class="sub" style="font-size:13px;margin-top:10px">Meeting suggestions are turned off. Turn them back on any time.</p>`; return; }
+  box.innerHTML = teamsMeetings.map((m,mi)=>`<div class="mtg">${m.title} · ${m.when} · ${m.attendees} attendees</div><div>` + m.suggest.map((s,si)=>{
+    const q = people[s.id], done = sentTo.has(s.id);
+    return `<div class="spot"><span class="av" style="background:${q.color}">${initials(q.name)}</span><div class="grow"><b>${q.first}</b> ${s.line}<div class="src">Teams meeting · ${m.title}</div></div><button class="btn ghost sm" data-teams="${mi}-${si}" ${done?"disabled":""}>${done?"Sent ✓":"Recognize"}</button></div>`;
+  }).join("") + `</div>`).join("");
+  box.querySelectorAll("[data-teams]").forEach(b=>b.addEventListener("click",()=>{
+    const [mi,si] = b.dataset.teams.split("-").map(Number), s = teamsMeetings[mi].suggest[si];
+    openCompose(s.id); $("#rWhy").value = s.why;
+  }));
+}
+$("#teamsToggle").addEventListener("change", e=>{ teamsOn = e.target.checked; renderTeams(); });
 
 /* ---------- Recognize modal ---------- */
 function show(id){ ["rForm","rDone","rPin"].forEach(x=>$("#"+x).classList.toggle("hidden", x!==id)); }
